@@ -1,0 +1,85 @@
+name: Autograding Tests
+'on':
+- push
+- workflow_dispatch
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: TestBasicValidInput (Not Extra Credit)
+      id: testbasicvalidinput-not-extra-credit
+      uses: education/autograding-command-grader@v1
+      with:
+        test-name: TestBasicValidInput (Not Extra Credit)
+        setup-command: ''
+        command: mvn -Dtest=ChamberTraversalTest#testValidInput test
+        timeout: 1
+        max-score: 1
+    - name: TestExtraCreditCharValidations
+      id: testextracreditcharvalidations
+      uses: education/autograding-command-grader@v1
+      with:
+        test-name: TestExtraCreditCharValidations
+        setup-command: ''
+        command: mvn -Dtest=ChamberTraversalTest#testCharValidInput test
+        timeout: 1
+        max-score: 2
+    - name: TestExtraCreditStrValidInput
+      id: testextracreditstrvalidinput
+      uses: education/autograding-command-grader@v1
+      with:
+        test-name: TestExtraCreditStrValidInput
+        setup-command: ''
+        command: mvn -Dtest=ChamberTraversalTest#testSrtValidInput test
+        timeout: 1
+        max-score: 3
+    - name: TestChamberCounting (int return has to be correct numbers of chambers
+      id: testchambercounting-int-return-has-to-be-correct-numbers-of-chambers
+      uses: education/autograding-command-grader@v1
+      with:
+        test-name: TestChamberCounting (int return has to be correct numbers of chambers
+        setup-command: ''
+        command: mvn -Dtest=ChamberTraversalTest#testCounting test
+        timeout: 1
+        max-score: 10
+    - name: TestMazeFileReadAndConversionToArr (The given file has to be converted
+        to 2D array that is returned)
+      id: testmazefilereadandconversiontoarr-the-given-file-has-to-be-converted-to-2d-array-that-is-returned
+      uses: education/autograding-command-grader@v1
+      with:
+        test-name: TestMazeFileReadAndConversionToArr (The given file has to be converted
+          to 2D array that is returned)
+        setup-command: ''
+        command: mvn -Dtest=ChamberTraversalTest#testReadMaze test
+        timeout: 1
+        max-score: 20
+    - name: TestMoveFloodSingleChamber (Floods a single chamber and 1s are set for
+        all '_' at the chamber)
+      id: testmovefloodsinglechamber-floods-a-single-chamber-and-1s-are-set-for-all-_-at-the-chamber
+      uses: education/autograding-command-grader@v1
+      with:
+        test-name: TestMoveFloodSingleChamber (Floods a single chamber and 1s are
+          set for all '_' at the chamber)
+        setup-command: ''
+        command: mvn -Dtest=ChamberTraversalTest#testMoveFlooding test
+        timeout: 1
+        max-score: 40
+    - name: Autograding Reporter
+      uses: education/autograding-grading-reporter@v1
+      env:
+        TESTBASICVALIDINPUT-NOT-EXTRA-CREDIT_RESULTS: "${{steps.testbasicvalidinput-not-extra-credit.outputs.result}}"
+        TESTEXTRACREDITCHARVALIDATIONS_RESULTS: "${{steps.testextracreditcharvalidations.outputs.result}}"
+        TESTEXTRACREDITSTRVALIDINPUT_RESULTS: "${{steps.testextracreditstrvalidinput.outputs.result}}"
+        TESTCHAMBERCOUNTING-INT-RETURN-HAS-TO-BE-CORRECT-NUMBERS-OF-CHAMBERS_RESULTS: "${{steps.testchambercounting-int-return-has-to-be-correct-numbers-of-chambers.outputs.result}}"
+        TESTMAZEFILEREADANDCONVERSIONTOARR-THE-GIVEN-FILE-HAS-TO-BE-CONVERTED-TO-2D-ARRAY-THAT-IS-RETURNED_RESULTS: "${{steps.testmazefilereadandconversiontoarr-the-given-file-has-to-be-converted-to-2d-array-that-is-returned.outputs.result}}"
+        TESTMOVEFLOODSINGLECHAMBER-FLOODS-A-SINGLE-CHAMBER-AND-1S-ARE-SET-FOR-ALL-_-AT-THE-CHAMBER_RESULTS: "${{steps.testmovefloodsinglechamber-floods-a-single-chamber-and-1s-are-set-for-all-_-at-the-chamber.outputs.result}}"
+      with:
+        runners: testbasicvalidinput-not-extra-credit,testextracreditcharvalidations,testextracreditstrvalidinput,testchambercounting-int-return-has-to-be-correct-numbers-of-chambers,testmazefilereadandconversiontoarr-the-given-file-has-to-be-converted-to-2d-array-that-is-returned,testmovefloodsinglechamber-floods-a-single-chamber-and-1s-are-set-for-all-_-at-the-chamber
